@@ -22,7 +22,7 @@ public enum SimurailCompat {
 	}
 
 	SimurailCompat(String modId) {
-		this(() -> LoadingModList.get().getModFileById("electroenergetics") != null);
+		this(() -> LoadingModList.get().getModFileById(modId) != null);
 	}
 	
 	public boolean isLoaded() {
