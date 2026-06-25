@@ -2,6 +2,13 @@ name: Bug Report
 description: "Report a bug with Simurail."
 labels: [ "bug" ]
 body:
+  - type: input
+    id: version
+    attributes:
+      label: Simurail version
+    validations:
+      required: true
+
   - type: textarea
     id: description
     attributes:
@@ -13,11 +20,12 @@ body:
     id: steps
     attributes:
       label: Steps to reproduce
-      description: "Describe the steps and mods required to reproduce the issue."
+      description: "Describe the steps and mod (versions) required to reproduce the issue."
     validations:
       required: true
 
   - type: input
+    id: log
     attributes:
       label: Game log
       description: |
