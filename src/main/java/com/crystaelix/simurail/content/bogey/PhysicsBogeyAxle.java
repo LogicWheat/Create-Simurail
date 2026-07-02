@@ -536,7 +536,7 @@ public class PhysicsBogeyAxle {
 			queuedForce.fma((driveForce - brakeForce) * timeStep, bogeyTrackFrame.direction);
 
 			if(friction < 1) {
-				visualSpeed = Mth.lerp(friction, targetSpeed, speed);
+				visualSpeed = Mth.lerp(friction * 0.9 + 0.1, targetSpeed, speed);
 			}
 			else {
 				visualSpeed = speed;
@@ -605,7 +605,7 @@ public class PhysicsBogeyAxle {
 			queuedForce.fma((driveForce - brakeForce) * timeStep, bogeyAxleFrame.direction);
 
 			if(friction < 1) {
-				visualSpeed = Mth.lerp(friction, targetSpeed, speed);
+				visualSpeed = Mth.lerp(friction * 0.9 + 0.1, targetSpeed, speed);
 			}
 			else {
 				visualSpeed = speed;
