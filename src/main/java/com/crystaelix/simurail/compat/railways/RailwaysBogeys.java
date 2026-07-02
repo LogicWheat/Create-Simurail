@@ -226,8 +226,51 @@ public class RailwaysBogeys {
 		BogeyType.setDefault(CRTrackType.NARROW_GAUGE, false, NARROW_STANDARD_SMALL.type());
 		BogeyType.setDefault(CRTrackType.WIDE_GAUGE, false, WIDE_STANDARD_SMALL.type());
 
-		BogeyPropertyOverrides.setGroundDrivableOverride(INVISIBLE.type(), false);
-		BogeyPropertyOverrides.setGroundDrivableOverride(INVISIBLE_ALT.type(), false);
+		wheelSpacing(INVISIBLE, 0);
+		wheelSpacing(INVISIBLE_ALT, 0);
+		wheelSpacing(NARROW_STANDARD_SMALL, 20);
+		wheelSpacing(NARROW_SCOTCH_YOKE_1, 0);
+		wheelSpacing(NARROW_SCOTCH_YOKE_2, 24);
+		wheelSpacing(WIDE_STANDARD_SMALL, 48);
+		wheelSpacing(WIDE_SCOTCH_YOKE_L, 0);
+		wheelSpacing(WIDE_SCOTCH_YOKE_XXL, 0);
+
+		wheelSpacing(COILSPRING, 0);
+		wheelSpacing(LEAFSPRING, 0);
+		wheelSpacing(STANDARD_S_1, 0);
+		wheelSpacing(STANDARD_M_1, 0);
+		wheelSpacing(TRAILING_M_1, 0);
+		wheelSpacing(SCOTCH_YOKE_1, 0);
+
+		wheelSpacing(MODERN, 32);
+		wheelSpacing(BLOMBERG, 32);
+		wheelSpacing(Y25, 32);
+		wheelSpacing(FREIGHT, 32);
+		wheelSpacing(PASSENGER, 32);
+		wheelSpacing(ARCHBAR, 32);
+		wheelSpacing(STANDARD_M_2, 32);
+		wheelSpacing(TRAILING_M_2, 32);
+		wheelSpacing(SCOTCH_YOKE_2, 28);
+		
+		wheelSpacing(HEAVYWEIGHT, 48);
+		wheelSpacing(RADIAL, 48);
+		wheelSpacing(STANDARD_M_3, 48);
+		wheelSpacing(TRAILING_M_3, 48);
+		wheelSpacing(TENDER_M_3, 48);
+		wheelSpacing(SCOTCH_YOKE_3, 54);
+
+		wheelSpacing(STANDARD_M_4, 72);
+		wheelSpacing(TENDER_M_4, 72);
+		wheelSpacing(SCOTCH_YOKE_4, 84);
+		
+		wheelSpacing(STANDARD_M_5, 96);
+		wheelSpacing(TENDER_M_5, 96);
+		wheelSpacing(SCOTCH_YOKE_5, 108);
+
+		wheelSpacing(SCOTCH_YOKE_6, 140);
+
+		groundDrivable(INVISIBLE, false);
+		groundDrivable(INVISIBLE_ALT, false);
 	}
 
 	public static BogeyType small(BogeyStyle style) {
@@ -236,5 +279,13 @@ public class RailwaysBogeys {
 
 	public static BogeyType large(BogeyStyle style) {
 		return new BogeyType(style, BogeySizes.LARGE);
+	}
+
+	public static void wheelSpacing(BogeyEntry entry, double wheelSpacing) {
+		BogeyPropertyOverrides.setWheelSpacingOverride(entry.type(), Math.max(wheelSpacing / 16, 0.5));
+	}
+
+	public static void groundDrivable(BogeyEntry entry, boolean groundDrivable) {
+		BogeyPropertyOverrides.setGroundDrivableOverride(entry.type(), groundDrivable);
 	}
 }

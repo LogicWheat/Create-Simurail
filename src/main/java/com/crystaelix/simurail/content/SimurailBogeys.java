@@ -2,6 +2,7 @@ package com.crystaelix.simurail.content;
 
 import java.util.List;
 
+import com.crystaelix.simurail.api.bogey.BogeyPropertyOverrides;
 import com.crystaelix.simurail.api.bogey.BogeyType;
 import com.crystaelix.simurail.api.bogey.menu.BogeyEntry;
 import com.crystaelix.simurail.api.bogey.menu.BogeyEntryCategory;
@@ -31,5 +32,8 @@ public class SimurailBogeys {
 		BogeyMenuManager.addBogeyCategory(CREATE);
 
 		BogeyType.setDefault(TrackType.STANDARD, false, SMALL.type());
+
+		BogeyPropertyOverrides.setWheelSpacingOverride(SMALL.type(), 2);
+		BogeyPropertyOverrides.setWheelSpacingOverride(LARGE.type(), 0.5);
 	}
 }

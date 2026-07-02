@@ -142,10 +142,7 @@ public class PhysicsBogeyAxle {
 	}
 
 	protected void updateVisualSpeed() {
-		visualSpeed = visualSpeed * 0.95;
-		if(Math.abs(visualSpeed) < 0.125 && Math.abs(visualSpeed) - Math.abs(targetSpeed) > 0.01) {
-			visualSpeed = 0;
-		}
+		visualSpeed = visualSpeed * 0.95 * (1 - bogey.getBrakeStrength());
 	}
 
 	protected void updateSignalGroup() {

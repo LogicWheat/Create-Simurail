@@ -2,6 +2,7 @@ package com.crystaelix.simurail.compat.create_bb;
 
 import java.util.List;
 
+import com.crystaelix.simurail.api.bogey.BogeyPropertyOverrides;
 import com.crystaelix.simurail.api.bogey.BogeyType;
 import com.crystaelix.simurail.api.bogey.menu.BogeyDataSelectionOption;
 import com.crystaelix.simurail.api.bogey.menu.BogeyEntry;
@@ -570,6 +571,119 @@ public class BlocksBogiesBogeys {
 
 	public static void register() {
 		BogeyMenuManager.addBogeyCategory(CREATE_BB);
+
+		// 1 S
+		wheelSpacing(STANDARD_1, 0);
+		wheelSpacing(TRAILING_1, 0);
+		// 1 L
+		wheelSpacing(WALSCHAERTS_LONG_L_1, 0);
+		wheelSpacing(GEARLESS_LONG_L_1, 0);
+		wheelSpacing(PISTONLESS_L_1, 0);
+		wheelSpacing(SCOTCH_YOKE_L_1, 0);
+		// 1 XL
+		wheelSpacing(WALSCHAERTS_LONG_XL_1, 0);
+		wheelSpacing(GEARLESS_LONG_XL_1, 0);
+		wheelSpacing(PISTONLESS_XL_1, 0);
+		wheelSpacing(SCOTCH_YOKE_XL_1, 0);
+		// 2 S
+		wheelSpacing(STANDARD_1_OFFSET, 32);
+		wheelSpacing(TRAILING_2, 32);
+		// 2 L
+		wheelSpacing(WALSCHAERTS_LONG_L_2, 28);
+		wheelSpacing(WALSCHAERTS_EXTENDED_L_2, 28);
+		wheelSpacing(WALSCHAERTS_SHORT_L_2, 28);
+		wheelSpacing(GEARLESS_LONG_L_2, 28);
+		wheelSpacing(GEARLESS_SHORT_L_2, 28);
+		wheelSpacing(PISTONLESS_L_2, 28);
+		wheelSpacing(RODLESS_L_2, 28);
+		wheelSpacing(SCOTCH_YOKE_L_2, 28);
+		// 2 XL
+		wheelSpacing(WALSCHAERTS_LONG_XL_2, 36);
+		wheelSpacing(WALSCHAERTS_EXTENDED_XL_2, 36);
+		wheelSpacing(WALSCHAERTS_SHORT_XL_2, 36);
+		wheelSpacing(GEARLESS_LONG_XL_2, 36);
+		wheelSpacing(GEARLESS_SHORT_XL_2, 36);
+		wheelSpacing(PISTONLESS_XL_2, 36);
+		wheelSpacing(RODLESS_XL_2, 36);
+		wheelSpacing(SCOTCH_YOKE_XL_2, 36);
+		// 3 S
+		wheelSpacing(STANDARD_3, 48);
+		wheelSpacing(TRAILING_3, 48);
+		// 3 L
+		wheelSpacing(WALSCHAERTS_LONG_L_3, 54);
+		wheelSpacing(WALSCHAERTS_SHORT_L_3, 54);
+		wheelSpacing(GEARLESS_LONG_L_3, 54);
+		wheelSpacing(GEARLESS_SHORT_L_3, 54);
+		wheelSpacing(PISTONLESS_L_3, 54);
+		wheelSpacing(RODLESS_L_3, 54);
+		wheelSpacing(SCOTCH_YOKE_L_3, 54);
+		// 3 Spaced L
+		wheelSpacing(WALSCHAERTS_LONG_L_3_SPACED, 65);
+		wheelSpacing(WALSCHAERTS_SHORT_L_3_SPACED, 65);
+		wheelSpacing(GEARLESS_LONG_L_3_SPACED, 65);
+		wheelSpacing(GEARLESS_SHORT_L_3_SPACED, 65);
+		wheelSpacing(PISTONLESS_L_3_SPACED, 65);
+		wheelSpacing(RODLESS_L_3_SPACED, 65);
+		// 3 XL
+		wheelSpacing(WALSCHAERTS_LONG_XL_3, 72);
+		wheelSpacing(WALSCHAERTS_SHORT_XL_3, 72);
+		wheelSpacing(GEARLESS_LONG_XL_3, 72);
+		wheelSpacing(GEARLESS_SHORT_XL_3, 72);
+		wheelSpacing(PISTONLESS_XL_3, 72);
+		wheelSpacing(RODLESS_XL_3, 72);
+		wheelSpacing(SCOTCH_YOKE_XL_3, 72);
+		// 3 Spaced XL
+		wheelSpacing(WALSCHAERTS_LONG_XL_3_SPACED, 91);
+		wheelSpacing(WALSCHAERTS_SHORT_XL_3_SPACED, 91);
+		wheelSpacing(GEARLESS_LONG_XL_3_SPACED, 91);
+		wheelSpacing(GEARLESS_SHORT_XL_3_SPACED, 91);
+		wheelSpacing(PISTONLESS_XL_3_SPACED, 91);
+		wheelSpacing(RODLESS_XL_3_SPACED, 91);
+		// 4 S
+		wheelSpacing(STANDARD_4, 48);
+		wheelSpacing(TRAILING_4, 48);
+		// 4 L
+		wheelSpacing(WALSCHAERTS_LONG_L_4, 84);
+		wheelSpacing(WALSCHAERTS_SHORT_L_4, 84);
+		wheelSpacing(GEARLESS_LONG_L_4, 84);
+		wheelSpacing(GEARLESS_SHORT_L_4, 84);
+		wheelSpacing(PISTONLESS_L_4, 84);
+		wheelSpacing(RODLESS_L_4, 84);
+		wheelSpacing(SCOTCH_YOKE_L_4, 84);
+		// 4 XL
+		wheelSpacing(WALSCHAERTS_LONG_XL_4, 108);
+		wheelSpacing(WALSCHAERTS_SHORT_XL_4, 108);
+		wheelSpacing(GEARLESS_LONG_XL_4, 108);
+		wheelSpacing(GEARLESS_SHORT_XL_4, 108);
+		wheelSpacing(PISTONLESS_XL_4, 108);
+		wheelSpacing(RODLESS_XL_4, 108);
+		wheelSpacing(SCOTCH_YOKE_XL_4, 108);
+		// 5 S
+		wheelSpacing(STANDARD_5, 64);
+		// 5 L
+		wheelSpacing(WALSCHAERTS_LONG_L_5, 108);
+		wheelSpacing(WALSCHAERTS_SHORT_L_5, 108);
+		wheelSpacing(GEARLESS_LONG_L_5, 108);
+		wheelSpacing(GEARLESS_SHORT_L_5, 108);
+		wheelSpacing(PISTONLESS_L_5, 108);
+		wheelSpacing(RODLESS_L_5, 108);
+		wheelSpacing(SCOTCH_YOKE_L_5, 108);
+		// 5 XL
+		wheelSpacing(WALSCHAERTS_LONG_XL_5, 144);
+		wheelSpacing(WALSCHAERTS_SHORT_XL_5, 144);
+		wheelSpacing(GEARLESS_LONG_XL_5, 144);
+		wheelSpacing(GEARLESS_SHORT_XL_5, 144);
+		wheelSpacing(PISTONLESS_XL_5, 144);
+		wheelSpacing(RODLESS_XL_5, 144);
+		wheelSpacing(SCOTCH_YOKE_XL_5, 144);
+		// 6 L
+		wheelSpacing(WALSCHAERTS_LONG_L_6, 140);
+		wheelSpacing(WALSCHAERTS_SHORT_L_6, 140);
+		wheelSpacing(GEARLESS_LONG_L_6, 140);
+		wheelSpacing(GEARLESS_SHORT_L_6, 140);
+		wheelSpacing(PISTONLESS_L_6, 140);
+		wheelSpacing(RODLESS_L_6, 140);
+		wheelSpacing(SCOTCH_YOKE_L_6, 140);
 	}
 
 	public static BogeyType small(BogeyStyle style) {
@@ -578,5 +692,9 @@ public class BlocksBogiesBogeys {
 
 	public static BogeyType large(BogeyStyle style) {
 		return new BogeyType(style, BogeySizes.LARGE);
+	}
+
+	public static void wheelSpacing(BogeyEntry entry, double wheelSpacing) {
+		BogeyPropertyOverrides.setWheelSpacingOverride(entry.type(), Math.max(wheelSpacing / 16, 0.5));
 	}
 }
