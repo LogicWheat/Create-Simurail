@@ -543,7 +543,7 @@ public class PhysicsBogeyAxle {
 			double brakeStrength = bogey.getBrakeStrength();
 
 			double targetSpeedFactor = config.axleTargetSpeedFactor.get();
-			targetSpeed = bogey.getSpeed() * targetSpeedFactor * bogey.getFacing().getAxisDirection().getStep();
+			targetSpeed = bogey.getSpeed() * targetSpeedFactor * bogey.getFacing().getAxisDirection().getStep() * bogey.getStressSign();
 			double targetSign = Math.signum(targetSpeed);
 			double diffSpeed = targetSpeed - speed;
 			double diffSign = Math.signum(diffSpeed);
@@ -601,7 +601,7 @@ public class PhysicsBogeyAxle {
 
 		SimurailPhysicsConfig config = SimurailConfig.server().physics;
 		double targetSpeedFactor = config.axleTargetSpeedFactor.get();
-		targetSpeed = bogey.getSpeed() * targetSpeedFactor * bogey.getFacing().getAxisDirection().getStep();
+		targetSpeed = bogey.getSpeed() * targetSpeedFactor * bogey.getFacing().getAxisDirection().getStep() * bogey.getStressSign();
 
 		if(clipResult.getType() != HitResult.Type.BLOCK) {
 			if(targetSpeed != 0) {

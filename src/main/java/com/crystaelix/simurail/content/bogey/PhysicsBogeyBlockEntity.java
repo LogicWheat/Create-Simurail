@@ -787,7 +787,11 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 			case null, default -> 1;
 			};
 		}
-		return options.getStress() * stressMultiplier;
+		return Math.abs(options.getStress()) * stressMultiplier;
+	}
+
+	public float getStressSign() {
+		return Math.signum(options.getStress());
 	}
 
 	@Override
