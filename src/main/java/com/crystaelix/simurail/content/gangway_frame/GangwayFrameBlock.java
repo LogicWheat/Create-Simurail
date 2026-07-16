@@ -158,6 +158,9 @@ public class GangwayFrameBlock extends HorizontalDirectionalBlock implements IBE
 			if(isPowered) {
 				withBlockEntityDo(level, pos, GangwayFrameBlockEntity::tryDisconnectGangway);
 			}
+			else {
+				withBlockEntityDo(level, pos, GangwayFrameBlockEntity::tryConnectGangway);
+			}
 		}
 	}
 
