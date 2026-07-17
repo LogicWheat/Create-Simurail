@@ -6,16 +6,16 @@ public class SimurailPhysicsConfig extends SimurailBaseConfig {
 	public final ConfigFloat bogeyPivotMass = f(1, 0, Float.MAX_VALUE, "bogeyPivotMass", Units.mass, Comments.bogeyPivotMass);
 	public final ConfigFloat bogeyPassiveAngularDamping = f(10, 0, Float.MAX_VALUE, "bogeyPassiveAngularDamping", Units.angularDamping, Comments.bogeyPassiveAngularDamping);
 	public final ConfigFloat bogeyVerticalSpringFrequency = f(50, 0, Float.MAX_VALUE, "bogeyVerticalSpringFrequency", Units.angularVelocity, Comments.bogeyVerticalSpringFrequency);
-	public final ConfigFloat bogeyVerticalSpringDampingRate = f(1.2F, 0, Float.MAX_VALUE, "bogeyVerticalSpringDampingRate", Comments.bogeyVerticalSpringDampingRate);
+	public final ConfigFloat bogeyVerticalSpringDampingRate = f(1.25F, 0, Float.MAX_VALUE, "bogeyVerticalSpringDampingRate", Comments.bogeyVerticalSpringDampingRate);
 	public final ConfigFloat bogeyVerticalSpringMaxForce = f(10000, 0, Float.MAX_VALUE, "bogeyVerticalSpringMaxForce", Units.force, Comments.bogeyVerticalSpringMaxForce);
 	public final ConfigFloat bogeyLateralSpringFrequency = f(10, 0, Float.MAX_VALUE, "bogeyLateralSpringFrequency", Units.angularVelocity, Comments.bogeyLateralSpringFrequency);
-	public final ConfigFloat bogeyLateralSpringDampingRate = f(1.2F, 0, Float.MAX_VALUE, "bogeyLateralSpringDampingRate", Comments.bogeyLateralSpringDampingRate);
+	public final ConfigFloat bogeyLateralSpringDampingRate = f(1.25F, 0, Float.MAX_VALUE, "bogeyLateralSpringDampingRate", Comments.bogeyLateralSpringDampingRate);
 	public final ConfigFloat bogeyLateralSpringMaxForce = f(10000, 0, Float.MAX_VALUE, "bogeyLateralSpringMaxForce", Units.force, Comments.bogeyLateralSpringMaxForce);
-	public final ConfigFloat bogeyAngularControllerFrequency = f(15, 0, Float.MAX_VALUE, "bogeyAngularControllerFrequency", Units.angularVelocity, Comments.bogeyAngularControllerFrequency);
-	public final ConfigFloat bogeyAngularControllerDampingRate = f(1.2F, 0, Float.MAX_VALUE, "bogeyAngularControllerDampingRate", Comments.bogeyAngularControllerDampingRate);
+	public final ConfigFloat bogeyAngularControllerFrequency = f(10, 0, Float.MAX_VALUE, "bogeyAngularControllerFrequency", Units.angularVelocity, Comments.bogeyAngularControllerFrequency);
+	public final ConfigFloat bogeyAngularControllerDampingRate = f(1.25F, 0, Float.MAX_VALUE, "bogeyAngularControllerDampingRate", Comments.bogeyAngularControllerDampingRate);
 	public final ConfigFloat bogeyAngularControllerErrorDecayRate = f(1, 0, Float.MAX_VALUE, "bogeyAngularControllerErrorDecayRate", Units.frequency, Comments.bogeyAngularControllerErrorDecayRate);
 	public final ConfigFloat bogeyAngularControllerIntegralGain = f(50, 0, Float.MAX_VALUE, "bogeyAngularControllerIntegralGain", Units.integralGain, Comments.bogeyAngularControllerIntegralGain);
-	public final ConfigFloat bogeyAngularControllerMomentMultiplier = f(3, 0, Float.MAX_VALUE, "bogeyAngularControllerMomentMultiplier", Comments.bogeyAngularControllerMomentMultiplier);
+	public final ConfigFloat bogeyAngularControllerMomentMultiplier = f(2, 0, Float.MAX_VALUE, "bogeyAngularControllerMomentMultiplier", Comments.bogeyAngularControllerMomentMultiplier);
 	public final ConfigFloat bogeyAngularControllerMaxTorque = f(10000, 0, Float.MAX_VALUE, "bogeyAngularControllerMaxTorque", Units.torque, Comments.bogeyAngularControllerMaxTorque);
 
 	public final ConfigGroup axle = group(1, "axle", "Physics Bogey Axles");
