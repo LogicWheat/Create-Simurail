@@ -3,12 +3,12 @@ package com.crystaelix.simurail.config;
 public class SimurailCompatConfig extends SimurailBaseConfig {
 
 	public final ConfigGroup railways = group(1, "railways", "Steam 'n' Rails");
-	public final ConfigFloat axleMonorailLateralMaxSpeedFactor = f(500, 0, Float.MAX_VALUE, "axleMonorailLateralMaxSpeedFactor", Units.acceleration, Comments.axleMonorailLateralMaxSpeedFactor);
-	public final ConfigFloat axleMonorailVerticalMaxSpeedFactor = f(100, 0, Float.MAX_VALUE, "axleMonorailVerticalMaxSpeedFactor", Units.acceleration, Comments.axleMonorailVerticalMaxSpeedFactor);
-	public final ConfigFloat axleNarrowLateralMaxSpeedFactor = f(25, 0, Float.MAX_VALUE, "axleNarrowLateralMaxSpeedFactor", Units.acceleration, Comments.axleNarrowLateralMaxSpeedFactor);
-	public final ConfigFloat axleNarrowVerticalMaxSpeedFactor = f(50, 0, Float.MAX_VALUE, "axleNarrowVerticalMaxSpeedFactor", Units.acceleration, Comments.axleNarrowVerticalMaxSpeedFactor);
-	public final ConfigFloat axleWideLateralMaxSpeedFactor = f(50, 0, Float.MAX_VALUE, "axleWideLateralMaxSpeedFactor", Units.acceleration, Comments.axleWideLateralMaxSpeedFactor);
-	public final ConfigFloat axleWideVerticalMaxSpeedFactor = f(50, 0, Float.MAX_VALUE, "axleWideVerticalMaxSpeedFactor", Units.acceleration, Comments.axleWideVerticalMaxSpeedFactor);
+	public final ConfigFloat axleMonorailLateralMaxSpeedFactor = f(500, 0, Float.MAX_VALUE, "monorailLateralMaxSpeedFactor", Units.acceleration, Comments.axleMonorailLateralMaxSpeedFactor);
+	public final ConfigFloat axleMonorailVerticalMaxSpeedFactor = f(100, 0, Float.MAX_VALUE, "monorailVerticalMaxSpeedFactor", Units.acceleration, Comments.axleMonorailVerticalMaxSpeedFactor);
+	public final ConfigFloat axleNarrowLateralMaxSpeedFactor = f(25, 0, Float.MAX_VALUE, "narrowLateralMaxSpeedFactor", Units.acceleration, Comments.axleNarrowLateralMaxSpeedFactor);
+	public final ConfigFloat axleNarrowVerticalMaxSpeedFactor = f(50, 0, Float.MAX_VALUE, "narrowVerticalMaxSpeedFactor", Units.acceleration, Comments.axleNarrowVerticalMaxSpeedFactor);
+	public final ConfigFloat axleWideLateralMaxSpeedFactor = f(50, 0, Float.MAX_VALUE, "wideLateralMaxSpeedFactor", Units.acceleration, Comments.axleWideLateralMaxSpeedFactor);
+	public final ConfigFloat axleWideVerticalMaxSpeedFactor = f(50, 0, Float.MAX_VALUE, "wideVerticalMaxSpeedFactor", Units.acceleration, Comments.axleWideVerticalMaxSpeedFactor);
 
 	@Override
 	public String getName() {

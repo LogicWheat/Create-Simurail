@@ -10,7 +10,6 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
 
-import com.crystaelix.simurail.api.control.PIDController;
 import com.crystaelix.simurail.api.math.Basis3d;
 import com.crystaelix.simurail.api.math.Basis3dc;
 import com.crystaelix.simurail.api.math.MovingQuaternionfLerp;
@@ -110,14 +109,12 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 	protected Quaterniond localPivotRot;
 	protected final Quaterniond lastLocalPivotRot = new Quaterniond();
 	protected GenericConstraintHandle pivotJoint;
+	protected GenericConstraintHandle motorJoint;
 	protected final PhysicsBogeyAxle axleFront;
 	protected final PhysicsBogeyAxle axleBack;
 	public double visualSpeed = 0;
 	protected double lastVisualSpeed = 0;
 	protected final LerpedFloat lerpedCurvature = LerpedFloat.linear();
-	protected final PIDController rollController = new PIDController();
-	protected final PIDController yawController = new PIDController(40, 2, 1, 50);
-	protected final PIDController pitchController = new PIDController(40, 2, 1, 50);
 
 	// Client rendering components
 	protected final MovingQuaternionfLerp renderPivotRot = MovingQuaternionfLerp.of(2);
@@ -234,10 +231,10 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 	public double connectionRange(SteeringConnectable other) {
 		if(other instanceof PhysicsBogeyBlockEntity otherBogey) {
 			if(Sable.HELPER.getContaining(this) == Sable.HELPER.getContaining(otherBogey)) {
-				return SimurailConfig.server().blocks.bogeyConnectionRangeSame.get();
+				return SimurailConfig.server().blocks.connectionBogeyRangeSame.get();
 			}
 			else {
-				return SimurailConfig.server().blocks.bogeyConnectionRangeDifferent.get();
+				return SimurailConfig.server().blocks.connectionBogeyRangeDifferent.get();
 			}
 		}
 		if(other instanceof AutomaticCouplerBlockEntity) {
@@ -459,14 +456,18 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 			physics.addObject(pivot);
 		}
 		if(pivotJoint == null || !pivotJoint.isValid()) {
-			double angularDamping = config.bogeyPassiveAngularDamping.get();
 			GenericConstraintConfiguration jointConfig = SimurailJoints.pivotJoint(
 					localCenter, SimurailMath.VEC_0,
 					getJointOrientation(), SimurailMath.ROT_XPYPZP);
 			pivotJoint = physics.getPipeline().addConstraint(subLevel, pivot, jointConfig);
 			pivotJoint.setContactsEnabled(false);
-			pivotJoint.setMotor(ConstraintJointAxis.ANGULAR_Y, 0, 0, angularDamping, false, 0);
-			pivotJoint.setMotor(ConstraintJointAxis.ANGULAR_Z, 0, 0, angularDamping, false, 0);
+		}
+		if(motorJoint == null || !motorJoint.isValid()) {
+			GenericConstraintConfiguration jointConfig = SimurailJoints.freeJoint(
+					localCenter, pivotPose.position(),
+					getJointOrientation(), pivotPose.orientation());
+			motorJoint = physics.getPipeline().addConstraint(subLevel, null, jointConfig);
+			motorJoint.setContactsEnabled(false);
 		}
 	}
 
@@ -476,6 +477,10 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 		if(pivotJoint != null) {
 			pivotJoint.remove();
 			pivotJoint = null;
+		}
+		if(motorJoint != null) {
+			motorJoint.remove();
+			motorJoint = null;
 		}
 		if(pivot != null) {
 			SubLevelPhysicsSystem physics = SubLevelContainer.getContainer(subLevel.getLevel()).physicsSystem();
@@ -541,7 +546,7 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 			if(Sable.HELPER.getContaining(this) instanceof ServerSubLevel) {
 			}
 
-			double maxDist = SimurailConfig.server().blocks.bogeyConnectionRangeDifferent.get();
+			double maxDist = SimurailConfig.server().blocks.connectionBogeyRangeDifferent.get();
 			if(connectionFront != null) {
 				if(level.getBlockEntity(connectionFront) instanceof PhysicsBogeyBlockEntity other) {
 					SubLevel selfSubLevel = Sable.HELPER.getContaining(this);
@@ -586,6 +591,8 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 		subLevel.logicalPose().transformPositionInverse(pivotPose.position(), localPivotOffset).sub(localCenter);
 		subLevel.logicalPose().orientation().conjugate(localPivotRot).mul(pivotPose.orientation());
 
+		motorJoint.setFrame2(pivotPose.position(), pivotPose.orientation());
+
 		updateAxles(subLevel, handle, timeStep);
 		updatePivotLimits(subLevel, timeStep);
 		updateForces(subLevel, handle, timeStep);
@@ -615,8 +622,8 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 		double linYLimit = options.enabled && options.allowVerticalOffset && hasTrack ? LINEAR_Y_LIMIT : 0;
 		double linZLimit = options.enabled && options.allowLateralOffset && hasTrack ? LINEAR_Z_LIMIT : 0;
 		double angXLimit = options.enabled && hasTrack ? ANGULAR_X_LIMIT : 0;
-		double angYLimit = options.enabled && hasTrack ? ANGULAR_Y_LIMIT : 0;
-		double angZLimit = options.enabled && bothTrack ? ANGULAR_Z_LIMIT : 0;
+		double angYLimit = options.enabled && options.allowYawOffset && hasTrack ? ANGULAR_Y_LIMIT : 0;
+		double angZLimit = options.enabled && options.allowPitchOffset && bothTrack ? ANGULAR_Z_LIMIT : 0;
 
 		pivotJoint.setLimit(ConstraintJointAxis.LINEAR_Y, -linYLimit, linYLimit);
 		pivotJoint.setLimit(ConstraintJointAxis.LINEAR_Z, -linZLimit, linZLimit);
@@ -627,12 +634,15 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 
 	protected void updateForces(ServerSubLevel subLevel, RigidBodyHandle handle, double timeStep) {
 		if(!options.enabled || !isActive()) {
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Y, 0, 0, SimurailMath.EPSILON, false, 0);
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Z, 0, 0, SimurailMath.EPSILON, false, 0);
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_Y, 0, 0, SimurailMath.EPSILON, false, 0);
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_Z, 0, 0, SimurailMath.EPSILON, false, 0);
 			return;
 		}
 
 		RigidBodyHandle pivotHandle = RigidBodyHandle.of(subLevel.getLevel(), pivot);
 		Vector3dc localDir = getDirection();
-		Vector3dc localLat = getLateral();
 		Quaterniond rot = subLevel.logicalPose().orientation();
 		globalBasis.orthogonalized(localDir, SimurailMath.DIR_YP).transform(rot);
 		Basis3dc.I.transform(pivotPose, globalPivotBasis);
@@ -647,107 +657,98 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 
 		// Linear Y
 		if(options.allowVerticalOffset) {
-			double normalMass = 1 / massData.getInverseNormalMass(localCenter, SimurailMath.DIR_YP);
-
 			double frequency = config.bogeyVerticalSpringFrequency.get();
 			double dampingRate = config.bogeyVerticalSpringDampingRate.get();
-			double stiffness = normalMass * frequency * frequency;
-			double damping = normalMass * frequency * dampingRate * 2;
+			double stiffness = frequency * frequency;
+			double damping = frequency * dampingRate * 2;
 			double maxForce = config.bogeyVerticalSpringMaxForce.get();
-
-			pivotJoint.setMotor(ConstraintJointAxis.LINEAR_Y, 0, stiffness, damping, true, maxForce);
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Y, 0, stiffness, damping, true, maxForce);
+		}
+		else if(!options.allowYawOffset && !options.allowPitchOffset) {
+			double multiplier = 1;
+			double frequency = config.bogeyVerticalLockingSpringFrequency.get();
+			double dampingRate = config.bogeyVerticalLockingSpringDampingRate.get();
+			double stiffness = multiplier * frequency * frequency;
+			double damping = multiplier * frequency * dampingRate * 2;
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Y, 0, stiffness, damping, false, 0);
 		}
 		else {
-			pivotJoint.setMotor(ConstraintJointAxis.LINEAR_Y, 0, 0, 1, false, 0);
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Y, 0, 0, SimurailMath.EPSILON, false, 0);
 		}
 
 		// Linear Z
 		if(options.allowLateralOffset) {
-			double normalMass = 1 / massData.getInverseNormalMass(localCenter, getLateral());
-
 			double frequency = config.bogeyLateralSpringFrequency.get();
 			double dampingRate = config.bogeyLateralSpringDampingRate.get();
-			double stiffness = normalMass * frequency * frequency;
-			double damping = normalMass * frequency * dampingRate * 2;
+			double stiffness = frequency * frequency;
+			double damping = frequency * dampingRate * 2;
 			double maxForce = config.bogeyLateralSpringMaxForce.get();
-
-			pivotJoint.setMotor(ConstraintJointAxis.LINEAR_Z, 0, stiffness, damping, true, maxForce);
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Z, 0, stiffness, damping, true, maxForce);
+		}
+		else if(!options.allowYawOffset && !options.allowPitchOffset) {
+			double multiplier = 1;
+			double frequency = config.bogeyLateralLockingSpringFrequency.get();
+			double dampingRate = config.bogeyLateralLockingSpringDampingRate.get();
+			double stiffness = multiplier * frequency * frequency;
+			double damping = multiplier * frequency * dampingRate * 2;
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Z, 0, stiffness, damping, false, 0);
 		}
 		else {
-			pivotJoint.setMotor(ConstraintJointAxis.LINEAR_Z, 0, 0, 1, false, 0);
+			motorJoint.setMotor(ConstraintJointAxis.LINEAR_Z, 0, 0, SimurailMath.EPSILON, false, 0);
 		}
 
 		// Angular X
 		{
-			double offset = SimurailMath.angle(globalBasis.vertical, globalPivotBasis.vertical, globalBasis.direction);
-			double velocity = globalRelAngVel.dot(globalBasis.direction);
-
-			lerpedCurvature.chase(getSignedLateralCurvature(), timeStep * 4, Chaser.EXP);
+			lerpedCurvature.chase(getSignedLateralCurvature(), timeStep * 10, Chaser.EXP);
 			lerpedCurvature.tickChaser();
 			double kLateral = lerpedCurvature.getValue();
 			double speed = getMovementSpeed();
 			double centAcc = speed * speed * kLateral;
-
-			double torqueOffset = massData.getCenterOfMass().y() - localCenter.y();
-			double mass = massData.getMass();
-			double centTorque = mass * centAcc * torqueOffset * Math.cos(offset);
-
 			double tiltStrength = options.getTiltStrength() * 0.1;
 			double tilt = Math.clamp(Math.atan(centAcc * tiltStrength), -TILT_LIMIT, TILT_LIMIT);
 
-			double momentMultiplier = config.bogeyAngularControllerMomentMultiplier.get();
-			double maxTorque = config.bogeyAngularControllerMaxTorque.get();
-			double moment = SimurailMath.moment(massData, localCenter, localDir) * momentMultiplier;
+			double multiplier = config.bogeyRollSpringMomentMultiplier.get();
+			double frequency = config.bogeyRollSpringFrequency.get();
+			double dampingRate = config.bogeyRollSpringDampingRate.get();
+			double stiffness = multiplier * frequency * frequency;
+			double damping = multiplier * frequency * dampingRate * 2;
+			double maxTorque = config.bogeyRollSpringMaxTorque.get();
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_X, -tilt, stiffness, damping, true, maxTorque);
 
-			rollController.setFrequency(config.bogeyAngularControllerFrequency.get());
-			rollController.setDampingRate(config.bogeyAngularControllerDampingRate.get());
-			rollController.setErrorDecayRate(config.bogeyAngularControllerErrorDecayRate.get());
-			rollController.setIntegralGain(config.bogeyAngularControllerIntegralGain.get());
-			double torqueMag = rollController.updateForce(moment, offset + tilt, velocity, maxTorque, timeStep) + centTorque / getActiveBogeyCount(subLevel);
-			torqueMag = Math.clamp(torqueMag, -maxTorque, maxTorque);
-
-			queuedTorque.fma(torqueMag * timeStep, globalBasis.direction);
+			double torqueOffset = massData.getCenterOfMass().y() - localCenter.y();
+			double mass = massData.getMass();
+			double centTorque = mass * centAcc * torqueOffset / getActiveBogeyCount(subLevel);
+			queuedTorque.fma(Math.clamp(centTorque, -maxTorque, maxTorque) * timeStep, globalBasis.direction);
 		}
 
 		// Angular Y
 		if(!options.allowYawOffset) {
-			double offset = SimurailMath.angle(globalBasis.lateral, globalPivotBasis.lateral, globalBasis.vertical);
-			double velocity = globalRelAngVel.dot(globalBasis.vertical);
-
-			double momentMultiplier = config.bogeyAngularControllerMomentMultiplier.get();
-			double moment = SimurailMath.moment(massData, localCenter, SimurailMath.DIR_YP) * momentMultiplier;
-			double maxTorque = moment * 20;
-
-			double torqueMag = yawController.updateForce(moment, offset, velocity, maxTorque, timeStep);
-			queuedTorque.fma(torqueMag * timeStep, globalBasis.vertical);
+			double multiplier = 1;
+			double frequency = config.bogeyYawLockingSpringFrequency.get();
+			double dampingRate = config.bogeyYawLockingSpringDampingRate.get();
+			double stiffness = multiplier * frequency * frequency;
+			double damping = multiplier * frequency * dampingRate * 2;
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_Y, 0, stiffness, damping, false, 0);
 		}
 		else {
-			yawController.reset();
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_Y, 0, 0, SimurailMath.EPSILON, false, 0);
 		}
 
 		// Angular Z
 		if(!options.allowPitchOffset) {
-			double offset = SimurailMath.angle(globalBasis.direction, globalPivotBasis.direction, globalBasis.lateral);
-			double velocity = globalRelAngVel.dot(globalBasis.lateral);
-
-			double momentMultiplier = config.bogeyAngularControllerMomentMultiplier.get();
-			double moment = SimurailMath.moment(massData, localCenter, localLat) * momentMultiplier;
-			double maxTorque = moment * 20;
-
-			double torqueMag = pitchController.updateForce(moment, offset, velocity, maxTorque, timeStep);
-			queuedTorque.fma(torqueMag * timeStep, globalBasis.lateral);
+			double multiplier = 1;
+			double frequency = config.bogeyPitchLockingSpringFrequency.get();
+			double dampingRate = config.bogeyPitchLockingSpringDampingRate.get();
+			double stiffness = multiplier * frequency * frequency;
+			double damping = multiplier * frequency * dampingRate * 2;
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_Z, 0, stiffness, damping, false, 0);
 		}
 		else {
-			pitchController.reset();
+			motorJoint.setMotor(ConstraintJointAxis.ANGULAR_Z, 0, 0, SimurailMath.EPSILON, false, 0);
 		}
 
 		rot.transformInverse(queuedTorque);
 		handle.applyTorqueImpulse(queuedTorque);
-
-		//rot.transform(queuedTorque);
-		//pivotPose.transformNormalInverse(queuedTorque);
-		//queuedTorque.negate();
-		//pivotHandle.applyTorqueImpulse(queuedTorque);
 	}
 
 	protected boolean isActive() {
@@ -934,6 +935,10 @@ public class PhysicsBogeyBlockEntity extends KineticBlockEntity implements Namea
 				if(pivotJoint != null) {
 					pivotJoint.remove();
 					pivotJoint = null;
+				}
+				if(motorJoint != null) {
+					motorJoint.remove();
+					motorJoint = null;
 				}
 				createPivot(subLevel);
 			}

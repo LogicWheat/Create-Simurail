@@ -6,7 +6,7 @@ public class PDController implements FeedbackController {
 	private double frequency;
 	private double dampingRate;
 
-	private double force = 0;
+	private double gain = 0;
 
 	public PDController() {
 	}
@@ -27,25 +27,24 @@ public class PDController implements FeedbackController {
 	}
 
 	@Override
-	public double updateForce(double inertia, double offset, double velocity, double maxForce, double timeStep) {
-		if(timeStep <= 0 || inertia <= 0) {
-			return force = 0;
+	public double updateGain(double offset, double velocity, double maxGain, double timeStep) {
+		if(timeStep <= 0) {
+			return gain = 0;
 		}
 		double stiffness = frequency * frequency;
 		double damping = 2 * frequency * dampingRate;
 		double numerator = stiffness * offset - damping * velocity;
 		double denominator = 1 + damping * timeStep + stiffness * timeStep * timeStep;
-		force = inertia * numerator / denominator;
-		return force = Math.clamp(force, -Math.abs(maxForce), Math.abs(maxForce));
+		return gain = Math.clamp(numerator / denominator, -Math.abs(maxGain), Math.abs(maxGain));
 	}
 
 	@Override
-	public double getForce() {
-		return force;
+	public double getGain() {
+		return gain;
 	}
 
 	@Override
 	public void reset() {
-		force = 0;
+		gain = 0;
 	}
 }

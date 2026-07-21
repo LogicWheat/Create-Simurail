@@ -11,8 +11,9 @@ public class PIDController implements FeedbackController {
 
 	private double lastTimeStep = 0;
 	private double cachedErrorDecay = -1;
+
 	private double error = 0;
-	private double force = 0;
+	private double gain = 0;
 
 	public PIDController() {
 	}
@@ -52,15 +53,15 @@ public class PIDController implements FeedbackController {
 	}
 
 	@Override
-	public double updateForce(double inertia, double offset, double velocity, double maxForce, double timeStep) {
-		if(timeStep <= 0 || inertia <= 0) {
+	public double updateGain(double offset, double velocity, double maxGain, double timeStep) {
+		if(timeStep <= 0) {
 			error = 0;
-			return force = 0;
+			return gain = 0;
 		}
 		double errorDecay = getErrorDecay(timeStep);
 		error = error * errorDecay + offset * (errorDecayRate > SimurailMath.EPSILON ? (1 - errorDecay) / errorDecayRate : timeStep);
 		double integralWindup = integralGain * error;
-		double maxIntegralWindup = Math.abs(maxForce) / inertia * 0.75;
+		double maxIntegralWindup = Math.abs(maxGain) * 0.75;
 		if(Math.abs(integralWindup) > maxIntegralWindup) {
 			integralWindup = Math.signum(integralWindup) * maxIntegralWindup;
 			error = integralGain > SimurailMath.EPSILON ? Math.signum(error) * maxIntegralWindup / integralGain : 0;
@@ -69,18 +70,17 @@ public class PIDController implements FeedbackController {
 		double damping = 2 * frequency * dampingRate;
 		double numerator = stiffness * offset - damping * velocity;
 		double denominator = 1 + damping * timeStep + stiffness * timeStep * timeStep;
-		force = inertia * (numerator / denominator + integralWindup);
-		return force = Math.clamp(force, -Math.abs(maxForce), Math.abs(maxForce));
+		return gain = Math.clamp(numerator / denominator + integralWindup, -Math.abs(maxGain), Math.abs(maxGain));
 	}
 
 	@Override
-	public double getForce() {
-		return force;
+	public double getGain() {
+		return gain;
 	}
 
 	@Override
 	public void reset() {
 		error = 0;
-		force = 0;
+		gain = 0;
 	}
 }

@@ -11,11 +11,11 @@ public class ADRController implements FeedbackController {
 
 	private double lastTimeStep = 0;
 	private double cachedDisturbanceDecay = -1;
+
 	private double z1 = 0;
 	private double z2 = 0;
 	private double z3 = 0;
-	private double lastTargetAcc = 0;
-	private double force = 0;
+	private double gain = 0;
 
 	public ADRController() {
 	}
@@ -55,8 +55,8 @@ public class ADRController implements FeedbackController {
 	}
 
 	@Override
-	public double updateForce(double inertia, double offset, double velocity, double maxForce, double timeStep) {
-		if(timeStep <= 0 || inertia <= 0) {
+	public double updateGain(double offset, double velocity, double maxGain, double timeStep) {
+		if(timeStep <= 0) {
 			reset();
 			return 0;
 		}
@@ -69,27 +69,23 @@ public class ADRController implements FeedbackController {
 		double dt2 = timeStep * timeStep;
 		double dt3 = dt2 * timeStep;
 		double delta = 1 + timeStep * l1 + dt2 * l2 + dt3 * l3;
-		z1 = (z1 + timeStep * z2 + dt2 * z3 + dt2 * lastTargetAcc - y) / delta + y;
+		z1 = (z1 + timeStep * z2 + dt2 * z3 + dt2 * gain - y) / delta + y;
 		z3 = z3 + timeStep * l3 * (y - z1);
-		double maxDisturbance = Math.abs(maxForce) / inertia * 0.75;
+		double maxDisturbance = Math.abs(maxGain) * 0.75;
 		if(Math.abs(z3) > maxDisturbance) {
 			z3 = Math.signum(z3) * maxDisturbance;
 		}
-		z2 = z2 + timeStep * lastTargetAcc + timeStep * z3 + timeStep * l2 * (y - z1);
+		z2 = z2 + timeStep * gain + timeStep * z3 + timeStep * l2 * (y - z1);
 		double stiffness = frequency * frequency;
 		double damping = 2 * frequency * dampingRate;
 		double numerator = stiffness * offset - damping * velocity;
 		double denominator = 1 + damping * timeStep + stiffness * dt2;
-		double targetAcc = numerator / denominator - z3;
-		force = inertia * targetAcc;
-		force = Math.clamp(force, -Math.abs(maxForce), Math.abs(maxForce));
-		lastTargetAcc = force / inertia;
-		return force;
+		return gain = Math.clamp(numerator / denominator - z3, -Math.abs(maxGain), Math.abs(maxGain));
 	}
 
 	@Override
-	public double getForce() {
-		return force;
+	public double getGain() {
+		return gain;
 	}
 
 	@Override
@@ -97,7 +93,6 @@ public class ADRController implements FeedbackController {
 		z1 = 0;
 		z2 = 0;
 		z3 = 0;
-		lastTargetAcc = 0;
-		force = 0;
+		gain = 0;
 	}
 }

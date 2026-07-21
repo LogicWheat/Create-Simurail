@@ -3,9 +3,9 @@ package com.crystaelix.simurail.config;
 public class SimurailBlocksConfig extends SimurailBaseConfig {
 
 	public final ConfigGroup connection = group(1, "steeringConnection", "Steering Connections");
-	public final ConfigFloat bogeyConnectionRangeSame = f(32, 1, 256, "bogeyConnectionRangeSame", Units.length, Comments.bogeyConnectionRangeSame);
-	public final ConfigFloat bogeyConnectionRangeDifferent = f(12, 1, 256, "bogeyConnectionRangeDifferent", Units.length, Comments.bogeyConnectionRangeDifferent);
-	public final ConfigFloat couplerConnectionRange = f(4, 1, 256, "couplerConnectionRange", Units.length, Comments.couplerConnectionRange);
+	public final ConfigFloat connectionBogeyRangeSame = f(32, 1, 256, "bogeyRangeSame", Units.length, Comments.connectionBogeyRangeSame);
+	public final ConfigFloat connectionBogeyRangeDifferent = f(12, 1, 256, "bogeyRangeDifferent", Units.length, Comments.connectionBogeyRangeDifferent);
+	public final ConfigFloat connectionCouplerRange = f(4, 1, 256, "couplerRange", Units.length, Comments.connectionCouplerRange);
 
 	@Override
 	public String getName() {
@@ -13,8 +13,8 @@ public class SimurailBlocksConfig extends SimurailBaseConfig {
 	}
 
 	static class Comments {
-		static String bogeyConnectionRangeSame = "The maximum distance of steering connections between Physics Bogeys on the same sublevel.";
-		static String bogeyConnectionRangeDifferent = "The maximum distance of steering connections between Physics Bogeys on different sublevels.";
-		static String couplerConnectionRange = "The maximum distance of steering connections between a Train Coupler and a Physics Bogey.";
+		static String connectionBogeyRangeSame = "The maximum distance of steering connections between Physics Bogeys on the same sublevel.";
+		static String connectionBogeyRangeDifferent = "The maximum distance of steering connections between Physics Bogeys on different sublevels.";
+		static String connectionCouplerRange = "The maximum distance of steering connections between a Train Coupler and a Physics Bogey.";
 	}
 }

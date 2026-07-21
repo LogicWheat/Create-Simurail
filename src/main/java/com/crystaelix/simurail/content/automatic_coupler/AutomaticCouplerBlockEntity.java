@@ -269,7 +269,7 @@ public class AutomaticCouplerBlockEntity extends SmartBlockEntity implements Men
 	@Override
 	public double connectionRange(SteeringConnectable other) {
 		if(other instanceof PhysicsBogeyBlockEntity) {
-			return SimurailConfig.server().blocks.couplerConnectionRange.get();
+			return SimurailConfig.server().blocks.connectionCouplerRange.get();
 		}
 		return 0;
 	}
@@ -545,14 +545,10 @@ public class AutomaticCouplerBlockEntity extends SmartBlockEntity implements Men
 							return;
 						}
 
-						double invMass = subLevel.getMassTracker().getInverseNormalMass(this.jointPos, this.jointDir);
-						double partnerInvMass = partnerSubLevel == null ? 0 : partnerSubLevel.getMassTracker().getInverseNormalMass(partner.jointPos, partner.jointDir);
-						double normalMass = 1 / (invMass + partnerInvMass);
-
-						double frequecy = config.couplerSpringFrequency.get();
+						double frequency = config.couplerSpringFrequency.get();
 						double dampingRate = config.couplerSpringDampingRate.get();
-						double stiffness = normalMass * frequecy * frequecy;
-						double damping = normalMass * frequecy * dampingRate * 2;
+						double stiffness = frequency * frequency;
+						double damping = frequency * dampingRate * 2;
 
 						SubLevelPhysicsSystem physics = SubLevelContainer.getContainer(subLevel.getLevel()).physicsSystem();
 						if(joint == null || !joint.isValid()) {

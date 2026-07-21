@@ -7,9 +7,9 @@ public interface FeedbackController {
 
 	void setDampingRate(double dampingRate);
 
-	double updateForce(double inertia, double offset, double velocity, double maxForce, double timeStep);
+	double updateGain(double offset, double velocity, double maxGain, double timeStep);
 
-	double getForce();
+	double getGain();
 	
 	void reset();
 }
